@@ -1,4 +1,4 @@
-# Pousadaria VueJS
+# InnSight VueJS
 
 This project is a VueJS version of the Pousadaria application, a platform for viewing and booking inns.
 
