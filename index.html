@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pousadaria</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div id="app">
+    <h1 @click="goBackToList">Pousadaria</h1>
+
+    <input type="text" v-model="searchText" placeholder="Buscar pousada pelo nome...">
+
+    <div v-if="guesthouses.length && !showingDetails">
+      <h2>Pousadas Disponíveis</h2>
+      <ul v-if="filteredGuesthouses.length">
+        <li v-for="guesthouse in filteredGuesthouses" :key="guesthouse.id">
+          {{ guesthouse.brand_name }} - {{ guesthouse.city }}
+          <button @click="displayDetails(guesthouse.id)">Ver Detalhes</button>
+        </li>
+      </ul>
+      <p v-else>Nenhuma pousada encontrada.</p>
+    </div>
+
+    <div v-if="showingDetails && currentGuesthouse">
+      <h2>Detalhes da Pousada</h2>
+      <p>Nome: {{ currentGuesthouse.brand_name }}</p>
+      <p>Descrição: {{ currentGuesthouse.description }}</p>
+      <p>Local: {{ currentGuesthouse.city }} - {{ currentGuesthouse.state }}</p>
+      <p v-if="currentGuesthouse.accepts_pets">Aceita pets</p>
+      <p>Check In: {{ formatTime(currentGuesthouse.check_in) }}</p>
+      <p>Check Out: {{ formatTime(currentGuesthouse.check_out) }}</p>
+      <p>Nota média: {{ currentGuesthouse.average_rating || 'Não avaliado' }}</p>
+      
+      <h3>Quartos Disponíveis</h3>
+      <ul>
+        <li v-for="room in currentGuesthouse.rooms" :key="room.id">
+          <p>Nome: {{ room.name }}</p>
+          <p>Descrição: {{ room.description }}</p>
+          <p>Dimensão: {{ room.dimension }} m²</p>
+          <p>Capacidade: {{ room.capacity }} pessoas</p>
+          <p>Valor da diária: R$ {{ room.daily_rate.toFixed(2) }}</p>
+          <p v-if="room.bathroom">Banheiro: Sim</p>
+          <p v-if="room.balcony">Varanda: Sim</p>
+          <p v-if="room.air_conditioning">Ar condicionado: Sim</p>
+          <p v-if="room.television">Televisão: Sim</p>
+          <p v-if="room.closet">Guarda-roupas: Sim</p>
+          <p v-if="room.safe">Cofre: Sim</p>
+          <p v-if="room.accessibility">Acessibilidade: Sim</p>
+          <button @click="prepareAvailabilityForm(room)">Verificar Disponibilidade</button>
+        </li>
+      </ul>
+
+      <div v-if="selectedRoom" ref="availabilityFormSection">
+        <h3>Verificar Disponibilidade para {{ selectedRoom.name }}</h3>
+        <form @submit.prevent="checkRoomAvailability(selectedRoom.id)">
+          <input type="date" v-model="availabilityData.startDate" required>
+          <input type="date" v-model="availabilityData.endDate" required>
+          <input type="number" v-model="availabilityData.guestsNumber" min="1" required
+            placeholder="Número de hóspedes">
+          <button type="submit">Verificar Disponibilidade</button>
+        </form>
+      </div>
+
+      <button @click="goBackToList">Voltar para a lista</button>
+    </div>
+
+    <div v-if="!guesthouses.length && !showingDetails">
+      <p>Carregando pousadas...</p>
+    </div>
+
+  </div>
+
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="main.js"></script>
+</body>
+
+</html>
